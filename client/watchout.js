@@ -2,7 +2,9 @@
 class ColliderGame {
   constructor() {
     this.NUM_ENEMIES = 50;
-    this.hitsByEnemies = 0;
+    this.highScore = 0;
+    this.currentScore = 0;
+    this.collisions = 0;
     this.init();
   }
 
@@ -45,15 +47,30 @@ class ColliderGame {
       .attr('cx', (d) => d[0])
       .attr('cy', (d) => d[1]);
 
+    this.updateScore();
+    setTimeout(this.drawEnemies.bind(this), 1000);
+  }
+
+  updateScore() {
     const player = d3.select('#player');
-    this.hitsByEnemies += d3.selectAll('.enemy')[0].filter(function(enemy) {
-      const xDist = player.attr('cx') - enemy.getAttribute('cx');
-      const yDist = player.attr('cy') - enemy.getAttribute('cy');
+    const hitsByEnemies = d3.selectAll('.enemy')[0].filter(function(enemy) {
+      const xDist = Number(player.attr('cx')) - Number(enemy.getAttribute('cx'));
+      const yDist = Number(player.attr('cy')) - Number(enemy.getAttribute('cy'));
       return Math.sqrt(xDist*xDist + yDist*yDist) < 2
     }).length;
-    console.log('Hits: ' + this.hitsByEnemies);
 
-    setTimeout(this.drawEnemies.bind(this), 1000);
+    if (hitsByEnemies > 0) {
+      this.collisions += hitsByEnemies;
+      this.currentScore = 0;
+      d3.select('.collisions > span').text(this.collisions);
+      d3.select('.current > span').text('0');
+    } else {
+      d3.select('.current > span').text(++this.currentScore);
+      if (this.highScore < this.currentScore) {
+        this.highScore = this.currentScore;
+        d3.select('.highscore > span').text(this.highScore);
+      }
+    }
   }
 }
 
