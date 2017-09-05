@@ -3,6 +3,10 @@
 /* Note: an asteroid image is included in this repo.
 Feel free to use it if you like. */
 
+#scoreboard {
+  font-family: sans-serif;
+}
+
 #gameBoard {
   border: black solid 2px;
 }

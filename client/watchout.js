@@ -1,7 +1,7 @@
 // start slingin' some d3 here.
 class ColliderGame {
   constructor() {
-    this.NUM_ENEMIES = 50;
+    this.NUM_ENEMIES = 20;
     this.highScore = 0;
     this.currentScore = 0;
     this.collisions = 0;
@@ -26,7 +26,6 @@ class ColliderGame {
   }
 
   dragPlayer(d) {
-      console.log('DRAG!');
       d3.select(this)
       .attr('cx', d.x = d3.event.x)
       .attr('cy', d.y = d3.event.y);
@@ -35,15 +34,19 @@ class ColliderGame {
   drawEnemies() {
     const enemyPositions = [];
 
-    d3.select('#gameBoard').selectAll('.enemy').data(enemyPositions).exit().remove();
-
     for (let i = 0; i < this.NUM_ENEMIES; i++) {
       enemyPositions[i] = [Math.floor(Math.random()*50), Math.floor(Math.random()*50)];
     }
     d3.select('#gameBoard').selectAll('.enemy').data(enemyPositions).enter()
       .append('circle')
       .attr('class', (d) => 'enemy')
-      .attr('r', (d) => 1)
+      .attr('r', (d) => 1);
+
+    d3.select('#gameBoard').selectAll('.enemy').data(enemyPositions)
+      .transition()
+      .duration(500)
+      .tween('score', this.detectCollision.bind(this))
+      .ease('linear')
       .attr('cx', (d) => d[0])
       .attr('cy', (d) => d[1]);
 
@@ -51,16 +54,24 @@ class ColliderGame {
     setTimeout(this.drawEnemies.bind(this), 1000);
   }
 
-  updateScore() {
+  detectCollision() {
     const player = d3.select('#player');
-    const hitsByEnemies = d3.selectAll('.enemy')[0].filter(function(enemy) {
-      const xDist = Number(player.attr('cx')) - Number(enemy.getAttribute('cx'));
-      const yDist = Number(player.attr('cy')) - Number(enemy.getAttribute('cy'));
-      return Math.sqrt(xDist*xDist + yDist*yDist) < 2
-    }).length;
+    const updateScoreFunction = this.updateScore.bind(this);
 
-    if (hitsByEnemies > 0) {
-      this.collisions += hitsByEnemies;
+    return function() {
+      const xDist = Number(player.attr('cx')) - Number(this.getAttribute('cx'));
+      const yDist = Number(player.attr('cy')) - Number(this.getAttribute('cy'));
+      const collision = Math.sqrt(xDist*xDist + yDist*yDist) < 2;
+
+      if (collision) {
+        updateScoreFunction(collision);
+      }
+    }
+  }
+
+  updateScore(collided = false) {
+    if (collided) {
+      this.collisions++;
       this.currentScore = 0;
       d3.select('.collisions > span').text(this.collisions);
       d3.select('.current > span').text('0');
