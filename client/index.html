@@ -1,16 +1,23 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel='stylesheet' type='css' href='styles.css'>
+    <link rel='stylesheet' type='text/css' href='styles.css'>
   </head>
   <body>
-    <div class="scoreboard">
+    <div id
       <!-- Modify the scoreboard when important events occur in your game! -->
       <div class="highscore">High score: <span>0</span></div>
       <div class="current">Current score: <span>0</span></div>
       <div class="collisions">Collisions: <span>0</span></div>
     </div>
-    <div class="board"><div class="mouse"></div></div>
+    <div class="board">
+      <div class="mouse"></div>
+      <svg xmlns="http://www.w3.org/2000/svg"
+         width="500" height="500" viewBox="0 0 50 50">
+         <!--<circle class="enemy" cx="1" cy="2" r="1"/>-->
+
+      </svg>
+    </div>
     <script src="lib/d3.js" charset="utf-8"></script>
     <script src='watchout.js'></script>
   </body>
