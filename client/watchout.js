@@ -44,28 +44,30 @@ class ColliderGame {
 
     d3.select('#gameBoard').selectAll('.enemy').data(enemyPositions)
       .transition()
-      .duration(500)
-      .tween('score', this.detectCollision.bind(this))
+      .duration(1000)
       .ease('linear')
+      .tween('score', this.detectCollision.bind(this))
       .attr('cx', (d) => d[0])
       .attr('cy', (d) => d[1]);
 
     this.updateScore();
-    setTimeout(this.drawEnemies.bind(this), 1000);
+    setTimeout(this.drawEnemies.bind(this), 1500);
   }
 
   detectCollision() {
     const player = d3.select('#player');
     const updateScoreFunction = this.updateScore.bind(this);
+    let collisionStarted = false;
 
     return function() {
       const xDist = Number(player.attr('cx')) - Number(this.getAttribute('cx'));
       const yDist = Number(player.attr('cy')) - Number(this.getAttribute('cy'));
       const collision = Math.sqrt(xDist*xDist + yDist*yDist) < 2;
 
-      if (collision) {
+      if (collision !== collisionStarted) {
         updateScoreFunction(collision);
       }
+      collisionStarted = collision;
     }
   }
 
